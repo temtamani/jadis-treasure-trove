@@ -17,6 +17,7 @@ import { Route as CartRouteImport } from './routes/cart'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as MarketplaceRouteImport } from './routes/marketplace'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
@@ -61,6 +62,11 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MarketplaceRoute = MarketplaceRouteImport.update({
   id: '/marketplace',
   path: '/marketplace',
@@ -86,6 +92,7 @@ export interface FileRoutesByFullPath {
   '/categories': typeof CategoriesRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/dashboard': typeof DashboardRoute
   '/marketplace': typeof MarketplaceRoute
   '/support': typeof SupportRoute
   '/product/$id': typeof ProductIdRoute
@@ -99,6 +106,7 @@ export interface FileRoutesByTo {
   '/categories': typeof CategoriesRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/dashboard': typeof DashboardRoute
   '/marketplace': typeof MarketplaceRoute
   '/support': typeof SupportRoute
   '/product/$id': typeof ProductIdRoute
@@ -113,6 +121,7 @@ export interface FileRoutesById {
   '/categories': typeof CategoriesRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/dashboard': typeof DashboardRoute
   '/marketplace': typeof MarketplaceRoute
   '/support': typeof SupportRoute
   '/product/$id': typeof ProductIdRoute
@@ -128,6 +137,7 @@ export interface FileRouteTypes {
     | '/categories'
     | '/checkout'
     | '/contact'
+    | '/dashboard'
     | '/marketplace'
     | '/support'
     | '/product/$id'
@@ -141,6 +151,7 @@ export interface FileRouteTypes {
     | '/categories'
     | '/checkout'
     | '/contact'
+    | '/dashboard'
     | '/marketplace'
     | '/support'
     | '/product/$id'
@@ -154,6 +165,7 @@ export interface FileRouteTypes {
     | '/categories'
     | '/checkout'
     | '/contact'
+    | '/dashboard'
     | '/marketplace'
     | '/support'
     | '/product/$id'
@@ -168,6 +180,7 @@ export interface RootRouteChildren {
   CategoriesRoute: typeof CategoriesRoute
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
+  DashboardRoute: typeof DashboardRoute
   MarketplaceRoute: typeof MarketplaceRoute
   SupportRoute: typeof SupportRoute
   ProductIdRoute: typeof ProductIdRoute
@@ -231,6 +244,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/marketplace': {
       id: '/marketplace'
       path: '/marketplace'
@@ -264,6 +284,7 @@ const rootRouteChildren: RootRouteChildren = {
   CategoriesRoute: CategoriesRoute,
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
+  DashboardRoute: DashboardRoute,
   MarketplaceRoute: MarketplaceRoute,
   SupportRoute: SupportRoute,
   ProductIdRoute: ProductIdRoute,
