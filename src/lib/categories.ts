@@ -7,6 +7,7 @@ import {
   Frame,
   Gem,
   Lamp,
+  Palette,
   Shapes,
   Watch,
   type LucideIcon,
@@ -16,7 +17,7 @@ import {
 export const CATEGORY_ICONS: Record<string, LucideIcon> = {
   Furniture: Armchair,
   Decorations: Lamp,
-  Paintings: Frame,
+  Paintings: Palette,
   Sculptures: Shapes,
   Coins: Coins,
   Jewelry: Gem,

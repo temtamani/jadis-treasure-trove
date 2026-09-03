@@ -1,23 +1,34 @@
 import { useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Menu, ShoppingBag, User2, X, LayoutDashboard, LogOut } from "lucide-react";
+import { Check, ChevronDown, Languages, Menu, MessageCircle, Search, ShoppingBag, User2, X, LayoutDashboard, LogOut } from "lucide-react";
 import logo from "@/assets/jadisart-logo.png";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/cart";
 import { useAuth } from "@/hooks/useAuth";
+import { useLanguage, type Language } from "@/context/language";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const NAV = [
-  { to: "/", label: "Home" },
-  { to: "/marketplace", label: "Marketplace" },
-  { to: "/about", label: "About" },
-  { to: "/contact", label: "Contact" },
+  { to: "/", label: "nav.home" },
+  { to: "/marketplace", label: "nav.marketplace" },
+  { to: "/categories", label: "nav.categories" },
+  { to: "/about", label: "nav.about" },
+  { to: "/contact", label: "nav.contact" },
 ] as const;
+
+const LANGUAGES: Array<{ value: Language; flag: string; label: string; short: string }> = [
+  { value: "ar", flag: "🇲🇦", label: "العربية", short: "AR" },
+  { value: "fr", flag: "🇫🇷", label: "Français", short: "FR" },
+  { value: "en", flag: "🇬🇧", label: "English", short: "EN" },
+];
 
 export function Header() {
   const [open, setOpen] = useState(false);
   const { count } = useCart();
   const { user, isAdmin, signOut } = useAuth();
+  const { language, setLanguage, t } = useLanguage();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const activeLanguage = LANGUAGES.find((item) => item.value === language) ?? LANGUAGES[2];
 
   return (
     <header className="sticky top-0 z-50 border-b border-gold/20 bg-gradient-espresso/95 glass-dark">
@@ -40,7 +51,7 @@ export function Header() {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-8 lg:flex" aria-label="Main">
+        <nav className="hidden items-center gap-5 xl:flex" aria-label="Main">
           {NAV.map((item) => (
             <Link
               key={item.to}
@@ -51,16 +62,41 @@ export function Header() {
                   : "text-espresso-foreground/80 hover:text-gold after:w-0 hover:after:w-full"
               }`}
             >
-              {item.label}
+                {t(item.label)}
             </Link>
           ))}
         </nav>
 
         <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="gap-1.5 px-2 text-espresso-foreground hover:bg-gold/15 hover:text-gold" aria-label={t("a11y.language")}>
+                <Languages aria-hidden="true" />
+                <span className="hidden sm:inline">{activeLanguage.short}</span>
+                <ChevronDown className="size-3" aria-hidden="true" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-44 border-gold/25 bg-popover p-1.5">
+              {LANGUAGES.map((item) => (
+                <DropdownMenuItem key={item.value} onSelect={() => setLanguage(item.value)} className="cursor-pointer justify-between py-2.5">
+                  <span className="flex items-center gap-2"><span aria-hidden="true">{item.flag}</span>{item.label}</span>
+                  {language === item.value && <Check className="text-gold" aria-hidden="true" />}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <Button variant="ghost" size="icon" asChild className="hidden text-espresso-foreground hover:bg-gold/15 hover:text-gold sm:inline-flex">
+            <Link to="/marketplace" aria-label={t("market.search")} search={{}}><Search aria-hidden="true" /></Link>
+          </Button>
+
+          <Button variant="ghost" size="icon" asChild className="hidden text-espresso-foreground hover:bg-gold/15 hover:text-gold md:inline-flex">
+            <Link to="/support" aria-label={t("nav.support")}><MessageCircle aria-hidden="true" /></Link>
+          </Button>
           {isAdmin && (
             <Button variant="goldOutline" size="sm" className="hidden text-gold sm:inline-flex" asChild>
               <Link to="/dashboard">
-                <LayoutDashboard aria-hidden="true" /> Dashboard
+                <LayoutDashboard aria-hidden="true" /> {t("nav.dashboard")}
               </Link>
             </Button>
           )}
@@ -70,7 +106,7 @@ export function Header() {
               variant="ghost"
               size="icon"
               onClick={signOut}
-              aria-label="Sign out"
+              aria-label={t("auth.signOut")}
               className="text-espresso-foreground hover:bg-gold/15 hover:text-gold"
             >
               <LogOut aria-hidden="true" />
@@ -82,7 +118,7 @@ export function Header() {
               asChild
               className="text-espresso-foreground hover:bg-gold/15 hover:text-gold"
             >
-              <Link to="/auth" aria-label="Sign in">
+              <Link to="/auth" aria-label={t("a11y.account")}>
                 <User2 aria-hidden="true" />
               </Link>
             </Button>
@@ -94,7 +130,7 @@ export function Header() {
             asChild
             className="relative text-espresso-foreground hover:bg-gold/15 hover:text-gold"
           >
-            <Link to="/cart" aria-label={`Shopping cart, ${count} items`}>
+            <Link to="/cart" aria-label={`${t("a11y.cart")}, ${count}`}>
               <ShoppingBag aria-hidden="true" />
               {count > 0 && (
                 <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-gradient-gold px-1 text-[0.65rem] font-semibold text-gold-foreground">
@@ -110,7 +146,7 @@ export function Header() {
             className="text-espresso-foreground hover:bg-gold/15 hover:text-gold lg:hidden"
             onClick={() => setOpen((value) => !value)}
             aria-expanded={open}
-            aria-label="Toggle navigation"
+            aria-label={t("a11y.menu")}
           >
             {open ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
           </Button>
@@ -129,7 +165,7 @@ export function Header() {
               onClick={() => setOpen(false)}
               className="block border-b border-gold/10 py-3 text-sm uppercase tracking-[0.18em] text-espresso-foreground/85 hover:text-gold"
             >
-              {item.label}
+              {t(item.label)}
             </Link>
           ))}
           {isAdmin && (
@@ -138,9 +174,12 @@ export function Header() {
               onClick={() => setOpen(false)}
               className="block py-3 text-sm uppercase tracking-[0.18em] text-gold"
             >
-              Dashboard
+              {t("nav.dashboard")}
             </Link>
           )}
+          <Link to="/support" onClick={() => setOpen(false)} className="flex items-center gap-2 py-3 text-sm uppercase tracking-[0.18em] text-gold xl:hidden">
+            <MessageCircle className="size-4" aria-hidden="true" /> {t("nav.support")}
+          </Link>
         </nav>
       )}
     </header>

@@ -14,6 +14,8 @@ import { ProductCard } from "@/components/ProductCard";
 import { Newsletter } from "@/components/Newsletter";
 import { useProducts } from "@/lib/products";
 import { CATEGORIES } from "@/lib/catalog";
+import { categoryIcon } from "@/lib/categories";
+import { useLanguage } from "@/context/language";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -80,6 +82,7 @@ const TESTIMONIALS = [
 ];
 
 function Home() {
+  const { t, categoryName } = useLanguage();
   const { data: products = [], isLoading } = useProducts();
   const featured = products.filter((product) => product.is_featured).slice(0, 6);
   const showcase = featured.length ? featured : products.slice(0, 6);
@@ -100,33 +103,31 @@ function Home() {
         <div className="mx-auto w-full max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
           <div className="max-w-2xl animate-fade-up">
             <p className="text-xs uppercase tracking-[0.4em] text-gold">
-              Established for the long-lived
+              {t("home.eyebrow")}
             </p>
             <h1 className="mt-6 font-display text-5xl leading-[1.05] text-espresso-foreground sm:text-6xl lg:text-7xl">
-              Objects that have already{" "}
-              <span className="text-gradient-gold">outlived a century</span>
+              {t("home.title.before")} {" "}
+              <span className="text-gradient-gold">{t("home.title.gold")}</span>
             </h1>
             <p className="mt-6 max-w-xl text-base leading-relaxed text-espresso-foreground/80">
-              JadisArt brings together antiques, vintage design and historical curiosities from
-              trusted European dealers — each authenticated, documented and ready for its next
-              chapter.
+              {t("home.intro")}
             </p>
             <div className="mt-10 flex flex-wrap gap-4">
               <Button variant="gold" size="lg" asChild>
                 <Link to="/marketplace">
-                  <Sparkles aria-hidden="true" /> Browse the collection
+                  <Sparkles aria-hidden="true" /> {t("home.browse")}
                 </Link>
               </Button>
               <Button variant="glass" size="lg" asChild>
-                <Link to="/about">Our story</Link>
+                <Link to="/about">{t("home.story")}</Link>
               </Button>
             </div>
 
             <dl className="mt-14 grid max-w-lg grid-cols-3 gap-6 border-t border-gold/25 pt-8">
               {[
-                { value: "2,400+", label: "Pieces placed" },
-                { value: "38", label: "Partner dealers" },
-                { value: "100%", label: "Authenticated" },
+                { value: "2,400+", label: t("home.piecesPlaced") },
+                { value: "38", label: t("home.dealers") },
+                { value: "100%", label: t("home.authenticated") },
               ].map((stat) => (
                 <div key={stat.label}>
                   <dt className="font-display text-3xl text-gold">{stat.value}</dt>
@@ -144,13 +145,13 @@ function Home() {
       <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8" aria-labelledby="featured">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p className="text-xs uppercase tracking-[0.34em] text-gold">Currently on view</p>
+            <p className="text-xs uppercase tracking-[0.34em] text-gold">{t("home.featuredEyebrow")}</p>
             <h2 id="featured" className="mt-3 font-display text-4xl sm:text-5xl">
-              Featured antiques
+              {t("home.featured")}
             </h2>
           </div>
           <Button variant="goldOutline" asChild>
-            <Link to="/marketplace">View all pieces</Link>
+            <Link to="/marketplace" search={{}}>{t("home.viewAll")}</Link>
           </Button>
         </div>
 
@@ -169,31 +170,29 @@ function Home() {
       </section>
 
       {/* Categories */}
-      <section className="bg-beige/60 py-24" aria-labelledby="categories">
+      <section className="relative overflow-hidden bg-gradient-espresso py-24 text-espresso-foreground" aria-labelledby="categories">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <p className="text-xs uppercase tracking-[0.34em] text-gold">Explore by discipline</p>
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="text-xs uppercase tracking-[0.34em] text-gold">{t("home.categoriesEyebrow")}</p>
             <h2 id="categories" className="mt-3 font-display text-4xl sm:text-5xl">
-              Categories
+              {t("home.categories")}
             </h2>
+            <p className="mt-4 text-sm leading-relaxed text-espresso-foreground/65">{t("home.categoriesIntro")}</p>
           </div>
 
-          <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-            {CATEGORIES.map((category, index) => (
-              <Link
-                key={category}
-                to="/marketplace"
-                search={{ category }}
-                className="group animate-fade-up rounded-2xl border border-border bg-card p-6 text-center shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-gold/50 hover:shadow-lift"
-                style={{ animationDelay: `${index * 45}ms` }}
-              >
-                <Gem
-                  className="mx-auto size-5 text-gold transition-transform duration-300 group-hover:scale-125"
-                  aria-hidden="true"
-                />
-                <span className="mt-3 block font-display text-lg">{category}</span>
-              </Link>
-            ))}
+          <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
+            {CATEGORIES.map((category, index) => {
+              const Icon = categoryIcon(category);
+              return (
+                <Link key={category} to="/marketplace" search={{ category }} aria-label={`${t("home.exploreCategory")}: ${categoryName(category)}`} className="group relative min-h-44 overflow-hidden rounded-lg border border-gold/20 bg-espresso/60 p-5 text-center transition-all duration-500 hover:-translate-y-1 hover:border-gold/60 hover:bg-gold/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold sm:min-h-52 sm:p-7" style={{ animationDelay: `${index * 45}ms` }}>
+                  <span className="mx-auto flex size-16 items-center justify-center rounded-full border border-gold/35 bg-ink/25 transition-all duration-500 group-hover:border-gold/70 group-hover:shadow-gold sm:size-20">
+                    <Icon className="size-7 text-gold transition-transform duration-500 group-hover:scale-110 sm:size-9" strokeWidth={1.25} aria-hidden="true" />
+                  </span>
+                  <span className="mt-5 block font-display text-lg leading-tight sm:text-xl">{categoryName(category)}</span>
+                  <span className="mx-auto mt-4 block h-px w-8 bg-gold/45 transition-all duration-500 group-hover:w-16 group-hover:bg-gold" aria-hidden="true" />
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -201,9 +200,9 @@ function Home() {
       {/* Why choose */}
       <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8" aria-labelledby="why">
         <div className="text-center">
-          <p className="text-xs uppercase tracking-[0.34em] text-gold">The JadisArt standard</p>
+          <p className="text-xs uppercase tracking-[0.34em] text-gold">{t("home.standard")}</p>
           <h2 id="why" className="mt-3 font-display text-4xl sm:text-5xl">
-            Why choose JadisArt
+            {t("home.why")}
           </h2>
         </div>
 
@@ -238,9 +237,9 @@ function Home() {
             />
           </div>
           <div className="text-espresso-foreground">
-            <p className="text-xs uppercase tracking-[0.34em] text-gold">About the company</p>
+            <p className="text-xs uppercase tracking-[0.34em] text-gold">{t("home.aboutEyebrow")}</p>
             <h2 id="about-home" className="mt-3 font-display text-4xl sm:text-5xl">
-              A dealer&apos;s eye, a collector&apos;s patience
+              {t("home.aboutTitle")}
             </h2>
             <p className="mt-6 text-sm leading-relaxed text-espresso-foreground/75">
               JadisArt began in a narrow Marais workshop where three restorers spent their evenings
@@ -253,11 +252,11 @@ function Home() {
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <Button variant="gold" asChild>
-                <Link to="/about">Read our story</Link>
+                <Link to="/about">{t("home.readStory")}</Link>
               </Button>
               <Button variant="goldOutline" className="text-gold" asChild>
                 <Link to="/contact">
-                  <Globe2 aria-hidden="true" /> Speak with a specialist
+                  <Globe2 aria-hidden="true" /> {t("home.specialist")}
                 </Link>
               </Button>
             </div>
@@ -271,9 +270,9 @@ function Home() {
         aria-labelledby="testimonials"
       >
         <div className="text-center">
-          <p className="text-xs uppercase tracking-[0.34em] text-gold">Collectors on JadisArt</p>
+          <p className="text-xs uppercase tracking-[0.34em] text-gold">{t("home.testimonialsEyebrow")}</p>
           <h2 id="testimonials" className="mt-3 font-display text-4xl sm:text-5xl">
-            Trusted by careful buyers
+            {t("home.testimonials")}
           </h2>
         </div>
 
