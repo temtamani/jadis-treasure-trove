@@ -130,8 +130,46 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+// After a new deploy the old HTML references asset hashes that no longer exist,
+// so lazy route chunks fail to load and the screen goes blank. Reload once to
+// pick up the fresh build.
+function useChunkReloadRecovery() {
+  useEffect(() => {
+    const KEY = "jadisart:chunk-reloaded";
+    const isChunkError = (message: string) =>
+      /Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module/i.test(
+        message,
+      );
+
+    const recover = (message: string) => {
+      if (!isChunkError(message)) return;
+      if (sessionStorage.getItem(KEY)) return;
+      sessionStorage.setItem(KEY, "1");
+      window.location.reload();
+    };
+
+    const onError = (event: ErrorEvent) => recover(event.message ?? "");
+    const onRejection = (event: PromiseRejectionEvent) =>
+      recover(String((event.reason as Error)?.message ?? event.reason ?? ""));
+    const onPreloadError = (event: Event) =>
+      recover(String((event as CustomEvent<{ message?: string }>).detail?.message ?? "Failed to fetch dynamically imported module"));
+
+    window.addEventListener("error", onError);
+    window.addEventListener("unhandledrejection", onRejection);
+    window.addEventListener("vite:preloadError", onPreloadError);
+    // A successful load means the app is healthy again; clear the guard.
+    sessionStorage.removeItem(KEY);
+    return () => {
+      window.removeEventListener("error", onError);
+      window.removeEventListener("unhandledrejection", onRejection);
+      window.removeEventListener("vite:preloadError", onPreloadError);
+    };
+  }, []);
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  useChunkReloadRecovery();
 
   return (
     <QueryClientProvider client={queryClient}>
