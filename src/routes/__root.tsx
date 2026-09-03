@@ -16,6 +16,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Toaster } from "@/components/ui/sonner";
 import { CartProvider } from "@/context/cart";
 import { AuthProvider } from "@/hooks/useAuth";
+import { LanguageProvider } from "@/context/language";
 
 
 function NotFoundComponent() {
@@ -173,7 +174,8 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
+      <LanguageProvider>
+       <AuthProvider>
         <CartProvider>
           <div className="flex min-h-screen flex-col">
             <Header />
@@ -185,7 +187,8 @@ function RootComponent() {
           </div>
           <Toaster position="top-right" richColors />
         </CartProvider>
-      </AuthProvider>
+       </AuthProvider>
+      </LanguageProvider>
     </QueryClientProvider>
   );
 
