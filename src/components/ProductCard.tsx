@@ -3,11 +3,13 @@ import { Eye, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatPrice, productImage, type Product } from "@/lib/catalog";
 import { useCart } from "@/context/cart";
+import { useLanguage } from "@/context/language";
 import { toast } from "sonner";
 
 /** A single antique presented as a rounded, lifting gallery card. */
 export function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
   const { addItem } = useCart();
+  const { t, categoryName } = useLanguage();
 
   return (
     <article
@@ -24,8 +26,8 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
             loading="lazy"
             className="size-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
-          <span className="absolute left-4 top-4 rounded-full glass px-3 py-1 text-[0.65rem] uppercase tracking-[0.2em] text-foreground">
-            {product.category}
+          <span className="absolute start-4 top-4 rounded-full glass px-3 py-1 text-[0.65rem] uppercase tracking-[0.2em] text-foreground">
+            {categoryName(product.category)}
           </span>
         </div>
       </Link>
@@ -43,19 +45,23 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
         <dl className="mt-1 space-y-1 text-xs text-muted-foreground">
           {product.material && (
             <div className="flex gap-2">
-              <dt className="uppercase tracking-[0.14em] text-foreground/60">Material</dt>
+              <dt className="uppercase tracking-[0.14em] text-foreground/60">
+                {t("product.material")}
+              </dt>
               <dd className="truncate">{product.material}</dd>
             </div>
           )}
           {product.dimensions && (
             <div className="flex gap-2">
-              <dt className="uppercase tracking-[0.14em] text-foreground/60">Size</dt>
+              <dt className="uppercase tracking-[0.14em] text-foreground/60">{t("product.size")}</dt>
               <dd className="truncate">{product.dimensions}</dd>
             </div>
           )}
           {product.weight && (
             <div className="flex gap-2">
-              <dt className="uppercase tracking-[0.14em] text-foreground/60">Weight</dt>
+              <dt className="uppercase tracking-[0.14em] text-foreground/60">
+                {t("product.weight")}
+              </dt>
               <dd className="truncate">{product.weight}</dd>
             </div>
           )}
@@ -66,7 +72,7 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
         <div className="mt-2 flex flex-wrap gap-2">
           <Button variant="goldOutline" size="sm" asChild className="flex-1">
             <Link to="/product/$id" params={{ id: product.id }}>
-              <Eye aria-hidden="true" /> View details
+              <Eye aria-hidden="true" /> {t("product.view")}
             </Link>
           </Button>
           <Button
@@ -75,10 +81,10 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
             className="flex-1"
             onClick={() => {
               addItem(product);
-              toast.success(`${product.title} added to your cart`);
+              toast.success(`${product.title} — ${t("product.added")}`);
             }}
           >
-            <Plus aria-hidden="true" /> Add to cart
+            <Plus aria-hidden="true" /> {t("product.add")}
           </Button>
         </div>
       </div>

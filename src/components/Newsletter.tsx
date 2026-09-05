@@ -5,6 +5,7 @@ import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/context/language";
 
 const emailSchema = z
   .string()
@@ -16,6 +17,7 @@ const emailSchema = z
 export function Newsletter() {
   const [email, setEmail] = useState("");
   const [pending, setPending] = useState(false);
+  const { t } = useLanguage();
 
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -41,21 +43,20 @@ export function Newsletter() {
   return (
     <section className="bg-gradient-espresso py-20" aria-labelledby="newsletter-heading">
       <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
-        <p className="text-xs uppercase tracking-[0.34em] text-gold">The Collector&apos;s Letter</p>
+        <p className="text-xs uppercase tracking-[0.34em] text-gold">{t("newsletter.eyebrow")}</p>
         <h2
           id="newsletter-heading"
           className="mt-4 font-display text-4xl text-espresso-foreground sm:text-5xl"
         >
-          First look at every new acquisition
+          {t("newsletter.title")}
         </h2>
         <p className="mt-4 text-sm leading-relaxed text-espresso-foreground/70">
-          One considered email each month: newly authenticated pieces, private viewings and notes
-          from our restorers.
+          {t("newsletter.body")}
         </p>
 
         <form onSubmit={onSubmit} className="mx-auto mt-8 flex max-w-md flex-col gap-3 sm:flex-row">
           <label htmlFor="newsletter-email" className="sr-only">
-            Email address
+            {t("newsletter.email")}
           </label>
           <Input
             id="newsletter-email"
@@ -67,7 +68,7 @@ export function Newsletter() {
             className="h-12 rounded-full border-gold/30 bg-espresso-foreground/8 text-espresso-foreground placeholder:text-espresso-foreground/40"
           />
           <Button type="submit" variant="gold" size="lg" disabled={pending}>
-            <Send aria-hidden="true" /> {pending ? "Joining…" : "Subscribe"}
+            <Send aria-hidden="true" /> {pending ? t("newsletter.joining") : t("newsletter.join")}
           </Button>
         </form>
       </div>
