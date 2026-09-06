@@ -155,7 +155,7 @@ export function Header() {
               {t("nav.dashboard")}
             </Link>
           )}
-          <Link to="/support" onClick={() => setOpen(false)} className="flex items-center gap-2 py-3 text-sm uppercase tracking-[0.18em] text-gold xl:hidden">
+          <Link to="/support" onClick={() => setOpen(false)} className="flex items-center gap-2 py-3 text-sm uppercase tracking-[0.18em] text-gold">
             <MessageCircle className="size-4" aria-hidden="true" /> {t("nav.support")}
           </Link>
         </nav>
