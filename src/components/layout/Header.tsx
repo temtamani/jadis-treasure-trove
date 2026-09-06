@@ -11,8 +11,10 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 const NAV = [
   { to: "/", label: "nav.home" },
   { to: "/marketplace", label: "nav.marketplace" },
+  { to: "/categories", label: "nav.categories" },
   { to: "/about", label: "nav.about" },
   { to: "/contact", label: "nav.contact" },
+  { to: "/account", label: "nav.account" },
 ] as const;
 
 const LANGUAGES: Array<{ value: Language; flag: string; label: string; short: string }> = [
@@ -50,7 +52,7 @@ export function Header() {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-5 xl:flex" aria-label="Main">
+        <nav className="hidden flex-1 items-center justify-center gap-5 lg:flex" aria-label="Main">
           {NAV.map((item) => (
             <Link
               key={item.to}
@@ -153,7 +155,7 @@ export function Header() {
               {t("nav.dashboard")}
             </Link>
           )}
-          <Link to="/support" onClick={() => setOpen(false)} className="flex items-center gap-2 py-3 text-sm uppercase tracking-[0.18em] text-gold xl:hidden">
+          <Link to="/support" onClick={() => setOpen(false)} className="flex items-center gap-2 py-3 text-sm uppercase tracking-[0.18em] text-gold">
             <MessageCircle className="size-4" aria-hidden="true" /> {t("nav.support")}
           </Link>
         </nav>
