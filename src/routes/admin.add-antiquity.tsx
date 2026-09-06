@@ -124,7 +124,11 @@ function AddAntiquity() {
         const path = `${user.id}/${crypto.randomUUID()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "-")}`;
         const upload = await supabase.storage.from("antiquity-images").upload(path, file, { contentType: file.type, upsert: false });
         if (upload.error) throw upload.error;
-        imageUrls.push(supabase.storage.from("antiquity-images").getPublicUrl(upload.data.path).data.publicUrl);
+        const signed = await supabase.storage
+          .from("antiquity-images")
+          .createSignedUrl(upload.data.path, 60 * 60 * 24 * 3650);
+        if (signed.error) throw signed.error;
+        imageUrls.push(signed.data.signedUrl);
         if (index === coverIndex) imageUrls.unshift(imageUrls.pop()!);
       }
       const details: AntiquityDetails = {
