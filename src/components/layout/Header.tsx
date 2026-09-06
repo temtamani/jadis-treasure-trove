@@ -52,7 +52,7 @@ export function Header() {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-5 xl:flex" aria-label="Main">
+        <nav className="hidden flex-1 items-center justify-center gap-5 lg:flex" aria-label="Main">
           {NAV.map((item) => (
             <Link
               key={item.to}
