@@ -11,10 +11,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 const NAV = [
   { to: "/", label: "nav.home" },
   { to: "/marketplace", label: "nav.marketplace" },
-  { to: "/categories", label: "nav.categories" },
   { to: "/about", label: "nav.about" },
   { to: "/contact", label: "nav.contact" },
-  { to: "/account", label: "nav.account" },
 ] as const;
 
 const LANGUAGES: Array<{ value: Language; flag: string; label: string; short: string }> = [
