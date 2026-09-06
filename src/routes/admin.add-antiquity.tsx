@@ -48,7 +48,7 @@ function AddAntiquity() {
   const editId = typeof window === "undefined" ? "" : new URLSearchParams(window.location.search).get("edit") ?? "";
 
   useEffect(() => {
-    if (!loading && (!user || !isAdmin)) navigate({ to: "/auth", replace: true });
+    if (!loading && (!user || !isAdmin)) navigate({ to: "/admin/login", replace: true });
   }, [loading, user, isAdmin, navigate]);
 
   useEffect(() => {
