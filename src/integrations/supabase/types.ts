@@ -169,7 +169,9 @@ export type Database = {
           condition: string | null
           created_at: string
           created_by: string | null
+          currency: string
           description: string
+          details: Json
           dimensions: string | null
           id: string
           images: string[]
@@ -177,9 +179,14 @@ export type Database = {
           is_published: boolean
           material: string | null
           price: number | null
+          price_type: string
           seller_location: string | null
           seller_name: string
+          short_description: string | null
+          slug: string | null
+          status: string
           stock_quantity: number
+          subcategory: string | null
           title: string
           updated_at: string
           weight: string | null
@@ -190,7 +197,9 @@ export type Database = {
           condition?: string | null
           created_at?: string
           created_by?: string | null
+          currency?: string
           description: string
+          details?: Json
           dimensions?: string | null
           id?: string
           images?: string[]
@@ -198,9 +207,14 @@ export type Database = {
           is_published?: boolean
           material?: string | null
           price?: number | null
+          price_type?: string
           seller_location?: string | null
           seller_name?: string
+          short_description?: string | null
+          slug?: string | null
+          status?: string
           stock_quantity?: number
+          subcategory?: string | null
           title: string
           updated_at?: string
           weight?: string | null
@@ -211,7 +225,9 @@ export type Database = {
           condition?: string | null
           created_at?: string
           created_by?: string | null
+          currency?: string
           description?: string
+          details?: Json
           dimensions?: string | null
           id?: string
           images?: string[]
@@ -219,9 +235,14 @@ export type Database = {
           is_published?: boolean
           material?: string | null
           price?: number | null
+          price_type?: string
           seller_location?: string | null
           seller_name?: string
+          short_description?: string | null
+          slug?: string | null
+          status?: string
           stock_quantity?: number
+          subcategory?: string | null
           title?: string
           updated_at?: string
           weight?: string | null
