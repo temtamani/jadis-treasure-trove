@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { Eye, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { formatPrice, productImage, type Product } from "@/lib/catalog";
+import { productImage, type Product } from "@/lib/catalog";
+import { displayPrice } from "@/lib/antiquities";
 import { useCart } from "@/context/cart";
 import { useLanguage } from "@/context/language";
 import { toast } from "sonner";
@@ -67,7 +68,7 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
           )}
         </dl>
 
-        <p className="mt-2 font-display text-2xl text-foreground">{formatPrice(product.price)}</p>
+        <p className="mt-2 font-display text-2xl text-foreground">{displayPrice(product.price, product.currency, product.price_type)}</p>
 
         <div className="mt-2 flex flex-wrap gap-2">
           <Button variant="goldOutline" size="sm" asChild className="flex-1">

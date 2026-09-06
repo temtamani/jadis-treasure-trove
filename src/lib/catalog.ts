@@ -20,6 +20,47 @@ export type Product = {
   is_featured: boolean;
   is_published: boolean;
   created_at: string;
+  subcategory?: string | null;
+  short_description?: string | null;
+  currency?: string;
+  price_type?: "fixed" | "on_request" | "contact";
+  status?: "draft" | "published";
+  slug?: string | null;
+  details?: AntiquityDetails;
+};
+
+export type AntiquityDetails = {
+  materials?: string[];
+  origin?: string;
+  country?: string;
+  region?: string;
+  period?: string;
+  approximateDate?: string;
+  century?: string;
+  artistMaker?: string;
+  culture?: string;
+  style?: string;
+  height?: string;
+  width?: string;
+  depth?: string;
+  dimensionUnit?: string;
+  weightValue?: string;
+  weightUnit?: string;
+  provenance?: string;
+  authenticity?: string;
+  certificate?: string;
+  inventoryNumber?: string;
+  collection?: string;
+  acquisitionDate?: string;
+  location?: string;
+  shipping?: string;
+  insuranceValue?: string;
+  restoration?: string;
+  specialNotes?: string;
+  internalNotes?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string;
 };
 
 export const CATEGORIES = [
@@ -47,8 +88,7 @@ export const CONDITIONS = [
 export const COMPANY = {
   name: "JadisArt",
   tagline: "Curators of the beautifully old",
-  // PLACEHOLDERS — replace with the real JadisArt details when available.
-  email: "contact@jadisart.com", // JADISART_EMAIL
+  email: "jadisart.gallery@gmail.com",
   phone: "+33 1 84 88 20 14", // JADISART_PHONE
   whatsapp: "+33184882014", // JADISART_WHATSAPP (digits only, international format)
   address: "18 Rue des Antiquaires, 75003 Paris, France",

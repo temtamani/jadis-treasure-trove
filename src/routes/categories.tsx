@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { CATEGORIES } from "@/lib/catalog";
 import { categoryIcon } from "@/lib/categories";
 import { useProducts } from "@/lib/products";
+import { useLanguage } from "@/context/language";
 
 export const Route = createFileRoute("/categories")({
   head: () => ({
@@ -24,15 +25,15 @@ export const Route = createFileRoute("/categories")({
 
 function Categories() {
   const { data: products = [] } = useProducts();
+  const { t, categoryName } = useLanguage();
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
       <header className="max-w-2xl">
-        <p className="text-xs uppercase tracking-[0.34em] text-gold">Collections</p>
-        <h1 className="mt-3 font-display text-4xl sm:text-5xl">Browse by category</h1>
+        <p className="text-xs uppercase tracking-[0.34em] text-gold">{t("categories.eyebrow")}</p>
+        <h1 className="mt-3 font-display text-4xl sm:text-5xl">{t("categories.title")}</h1>
         <p className="mt-4 text-muted-foreground">
-          Each category is curated and authenticated by our specialists, from 18th-century cabinetry
-          to rare timepieces.
+          {t("categories.intro")}
         </p>
       </header>
 
@@ -52,9 +53,9 @@ function Categories() {
                 className="size-9 text-gold transition-transform duration-500 group-hover:scale-110"
                 aria-hidden="true"
               />
-              <h2 className="mt-5 font-display text-2xl">{category}</h2>
+              <h2 className="mt-5 font-display text-2xl">{categoryName(category)}</h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                {count} {count === 1 ? "piece" : "pieces"} available
+                {count} {count === 1 ? t("categories.piece") : t("categories.pieces")} {t("categories.available")}
               </p>
               <span className="mt-4 block h-px w-12 bg-gradient-gold transition-all duration-500 group-hover:w-24" />
             </Link>

@@ -3,11 +3,13 @@ import { useRouterState } from "@tanstack/react-router";
 import { Headset, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChatPanel } from "@/components/ChatPanel";
+import { useLanguage } from "@/context/language";
 
 /** Floating customer-service launcher, bottom-right on every page. */
 export function SupportWidget() {
   const [open, setOpen] = useState(false);
   const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const { t } = useLanguage();
 
   // The dedicated page already shows the full conversation.
   if (pathname === "/support") return null;
@@ -23,7 +25,7 @@ export function SupportWidget() {
         variant="gold"
         size="icon"
         aria-expanded={open}
-        aria-label={open ? "Fermer le chat" : "Ouvrir le chat service client"}
+        aria-label={open ? t("chat.close") : t("chat.open")}
         onClick={() => setOpen((value) => !value)}
         className="fixed bottom-6 right-4 z-50 size-14 rounded-full shadow-lift"
       >

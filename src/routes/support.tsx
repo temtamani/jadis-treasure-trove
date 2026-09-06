@@ -3,6 +3,7 @@ import { Mail, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChatPanel } from "@/components/ChatPanel";
 import { COMPANY, WHATSAPP_LINK } from "@/lib/catalog";
+import { useLanguage } from "@/context/language";
 
 export const Route = createFileRoute("/support")({
   head: () => ({
@@ -24,19 +25,19 @@ export const Route = createFileRoute("/support")({
 });
 
 function Support() {
+  const { t } = useLanguage();
   return (
     <section className="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1fr_1.3fr] lg:px-8">
       <div>
-        <p className="text-xs uppercase tracking-[0.34em] text-gold">Service client</p>
-        <h1 className="mt-4 font-display text-4xl sm:text-5xl">Besoin d&apos;aide ?</h1>
+        <p className="text-xs uppercase tracking-[0.34em] text-gold">{t("support.eyebrow")}</p>
+        <h1 className="mt-4 font-display text-4xl sm:text-5xl">{t("support.title")}</h1>
         <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
-          Notre équipe JadisArt est à votre disposition pour répondre à vos questions sur une pièce,
-          une livraison, une estimation ou une commande en cours.
+          {t("support.intro")}
         </p>
         <div className="mt-8 space-y-3">
           <Button variant="goldOutline" asChild className="w-full justify-start">
             <a href={`mailto:${COMPANY.email}`}>
-              <Mail aria-hidden="true" /> Contactez-nous par email
+              <Mail aria-hidden="true" /> {t("support.email")}
             </a>
           </Button>
           <Button variant="espresso" asChild className="w-full justify-start">
@@ -45,7 +46,7 @@ function Support() {
             </a>
           </Button>
           <Button variant="ghost" asChild className="w-full justify-start">
-            <Link to="/contact">Formulaire de contact</Link>
+            <Link to="/contact">{t("support.contactForm")}</Link>
           </Button>
         </div>
         <p className="mt-8 text-xs text-muted-foreground">{COMPANY.hours}</p>

@@ -16,9 +16,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useProduct } from "@/lib/products";
-import { formatPrice, PLACEHOLDER_IMAGE } from "@/lib/catalog";
+import { PLACEHOLDER_IMAGE } from "@/lib/catalog";
+import { displayPrice } from "@/lib/antiquities";
 import { useCart } from "@/context/cart";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/context/language";
 
 export const Route = createFileRoute("/product/$id")({
   head: () => ({
@@ -50,6 +52,7 @@ function ProductDetails() {
   const { id } = Route.useParams();
   const { data: product, isLoading } = useProduct(id);
   const { addItem } = useCart();
+  const { t, categoryName } = useLanguage();
   const [active, setActive] = useState(0);
   const [open, setOpen] = useState(false);
   const [sending, setSending] = useState(false);
@@ -65,27 +68,28 @@ function ProductDetails() {
   if (!product) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-32 text-center">
-        <h1 className="font-display text-4xl">This piece is no longer available</h1>
+        <h1 className="font-display text-4xl">{t("product.unavailable")}</h1>
         <p className="mt-3 text-sm text-muted-foreground">
-          It may have found a new home. Browse the rest of the collection.
+          {t("product.unavailableHint")}
         </p>
         <Button variant="gold" className="mt-8" asChild>
-          <Link to="/marketplace">Back to marketplace</Link>
+          <Link to="/marketplace">{t("product.back")}</Link>
         </Button>
       </div>
     );
   }
 
   const gallery = product.images?.length ? product.images : [PLACEHOLDER_IMAGE];
+  const details = product.details ?? {};
 
   const specs = [
-    ["Category", product.category],
-    ["Material", product.material],
-    ["Dimensions", product.dimensions],
-    ["Weight", product.weight],
-    ["Year", product.year],
-    ["Condition", product.condition],
-    ["Availability", `${product.stock_quantity} in stock`],
+    [t("product.category"), categoryName(product.category)],
+    [t("product.material"), details.materials?.join(", ") || product.material],
+    [t("product.size"), [details.height, details.width, details.depth].filter(Boolean).join(` × `) || product.dimensions],
+    [t("product.weight"), details.weightValue ? `${details.weightValue} ${details.weightUnit ?? ""}` : product.weight],
+    [t("product.year"), product.year],
+    [t("product.condition"), product.condition],
+    [t("product.availability"), `${product.stock_quantity} ${t("product.inStock")}`],
   ].filter(([, value]) => Boolean(value)) as [string, string][];
 
   const onInquiry = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -115,10 +119,10 @@ function ProductDetails() {
     setSending(false);
 
     if (error) {
-      toast.error("Your message could not be sent. Please try again.");
+      toast.error(t("contact.sendError"));
       return;
     }
-    toast.success("Message sent — a specialist will reply within one business day.");
+    toast.success(t("product.sent"));
     setOpen(false);
   };
 
@@ -128,7 +132,7 @@ function ProductDetails() {
         to="/marketplace"
         className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-gold"
       >
-        <ArrowLeft className="size-4" aria-hidden="true" /> Back to marketplace
+        <ArrowLeft className="size-4" aria-hidden="true" /> {t("product.back")}
       </Link>
 
       <div className="mt-8 grid gap-12 lg:grid-cols-2">
@@ -172,10 +176,10 @@ function ProductDetails() {
         {/* Details */}
         <div className="animate-fade-up">
           <span className="rounded-full bg-beige px-3 py-1 text-[0.65rem] uppercase tracking-[0.22em] text-foreground/70">
-            {product.category}
+            {categoryName(product.category)}
           </span>
           <h1 className="mt-5 font-display text-4xl leading-tight sm:text-5xl">{product.title}</h1>
-          <p className="mt-4 font-display text-3xl text-gold">{formatPrice(product.price)}</p>
+          <p className="mt-4 font-display text-3xl text-gold">{displayPrice(product.price, product.currency, product.price_type)}</p>
 
           <p className="mt-6 text-sm leading-relaxed text-muted-foreground">
             {product.description}
@@ -192,9 +196,20 @@ function ProductDetails() {
             ))}
           </dl>
 
+          {(details.provenance || details.authenticity || details.certificate || details.restoration || details.shipping || details.specialNotes) && (
+            <div className="mt-6 grid gap-5 rounded-3xl border border-gold/20 bg-card p-6 shadow-soft">
+              {details.provenance && <DetailBlock label="Provenance" value={details.provenance} />}
+              {details.authenticity && <DetailBlock label="Authenticity" value={details.authenticity} />}
+              {details.certificate && <DetailBlock label="Certificate" value={details.certificate} />}
+              {details.restoration && <DetailBlock label="Restoration" value={details.restoration} />}
+              {details.shipping && <DetailBlock label="Shipping" value={details.shipping} />}
+              {details.specialNotes && <DetailBlock label="Notes" value={details.specialNotes} />}
+            </div>
+          )}
+
           <div className="mt-6 rounded-3xl glass p-6">
             <h2 className="flex items-center gap-2 font-display text-xl">
-              <ShieldCheck className="size-4 text-gold" aria-hidden="true" /> Seller
+              <ShieldCheck className="size-4 text-gold" aria-hidden="true" /> {t("product.seller")}
             </h2>
             <p className="mt-3 text-sm text-foreground">{product.seller_name}</p>
             {product.seller_location && (
@@ -204,8 +219,7 @@ function ProductDetails() {
               </p>
             )}
             <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-              Verified dealer. Condition report and provenance documentation supplied with every
-              purchase.
+              {t("product.verified")}
             </p>
           </div>
 
@@ -215,28 +229,28 @@ function ProductDetails() {
               size="lg"
               onClick={() => {
                 addItem(product);
-                toast.success(`${product.title} added to your cart`);
+                toast.success(`${product.title} ${t("product.added")}`);
               }}
             >
-              <ShoppingBag aria-hidden="true" /> Add to cart
+              <ShoppingBag aria-hidden="true" /> {t("product.add")}
             </Button>
 
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
                 <Button variant="goldOutline" size="lg">
-                  <MessageSquare aria-hidden="true" /> Contact seller
+                  <MessageSquare aria-hidden="true" /> {t("product.contactSeller")}
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
-                  <DialogTitle className="font-display text-2xl">Contact the seller</DialogTitle>
+                  <DialogTitle className="font-display text-2xl">{t("product.contactTitle")}</DialogTitle>
                   <DialogDescription>
-                    Your message about “{product.title}” goes straight to the JadisArt team.
+                    {t("product.contactDescription")} ({product.title})
                   </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={onInquiry} className="space-y-4">
                   <div>
-                    <Label htmlFor="full_name">Full name</Label>
+                    <Label htmlFor="full_name">{t("checkout.fullName")}</Label>
                     <Input id="full_name" name="full_name" required maxLength={100} className="mt-1.5" />
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
@@ -245,16 +259,16 @@ function ProductDetails() {
                       <Input id="email" name="email" type="email" required className="mt-1.5" />
                     </div>
                     <div>
-                      <Label htmlFor="phone">Phone number</Label>
+                      <Label htmlFor="phone">{t("account.phone")}</Label>
                       <Input id="phone" name="phone" type="tel" maxLength={40} className="mt-1.5" />
                     </div>
                   </div>
                   <div>
-                    <Label htmlFor="message">Message</Label>
+                    <Label htmlFor="message">{t("contact.message")}</Label>
                     <Textarea id="message" name="message" rows={4} required maxLength={1000} className="mt-1.5" />
                   </div>
                   <Button type="submit" variant="gold" className="w-full" disabled={sending}>
-                    {sending ? "Sending…" : "Send message"}
+                    {sending ? t("contact.sending") : t("contact.sendButton")}
                   </Button>
                 </form>
               </DialogContent>
@@ -264,4 +278,8 @@ function ProductDetails() {
       </div>
     </div>
   );
+}
+
+function DetailBlock({ label, value }: { label: string; value: string }) {
+  return <div><p className="text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">{label}</p><p className="mt-1 text-sm leading-relaxed">{value}</p></div>;
 }

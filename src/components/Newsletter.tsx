@@ -23,7 +23,7 @@ export function Newsletter() {
     event.preventDefault();
     const parsed = emailSchema.safeParse(email);
     if (!parsed.success) {
-      toast.error(parsed.error.issues[0].message);
+      toast.error(t("validation.email"));
       return;
     }
     setPending(true);
@@ -33,10 +33,10 @@ export function Newsletter() {
     setPending(false);
 
     if (error && !error.message.includes("duplicate")) {
-      toast.error("We could not save your subscription. Please try again.");
+      toast.error(t("newsletter.error"));
       return;
     }
-    toast.success("Welcome to the JadisArt circle — new arrivals land in your inbox first.");
+    toast.success(t("newsletter.success"));
     setEmail("");
   };
 

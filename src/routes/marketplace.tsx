@@ -16,6 +16,7 @@ import {
 import { ProductCard } from "@/components/ProductCard";
 import { useProducts } from "@/lib/products";
 import { CATEGORIES } from "@/lib/catalog";
+import { useLanguage } from "@/context/language";
 
 const searchSchema = z.object({
   category: z.string().optional(),
@@ -54,6 +55,8 @@ const PER_PAGE = 9;
 function Marketplace() {
   const search = Route.useSearch();
   const { data: products = [], isLoading } = useProducts();
+  const { t, categoryName } = useLanguage();
+  const sortLabels = { newest: t("market.newest"), oldest: t("market.oldest"), "price-asc": t("market.priceAsc"), "price-desc": t("market.priceDesc") };
 
   const [query, setQuery] = useState(search.q ?? "");
   const [category, setCategory] = useState(search.category ?? "all");
@@ -115,13 +118,12 @@ function Marketplace() {
     <>
       <section className="bg-gradient-espresso py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <p className="text-xs uppercase tracking-[0.34em] text-gold">The catalogue</p>
+          <p className="text-xs uppercase tracking-[0.34em] text-gold">{t("market.eyebrow")}</p>
           <h1 className="mt-3 font-display text-5xl text-espresso-foreground sm:text-6xl">
-            Marketplace
+            {t("market.title")}
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-relaxed text-espresso-foreground/70">
-            {products.length} authenticated pieces, from Louis XV giltwood to Roman silver. Search
-            instantly, filter by material or price, and sort to taste.
+            {products.length} {t("market.pieces")}, {t("market.intro")}
           </p>
         </div>
       </section>
@@ -130,12 +132,12 @@ function Marketplace() {
         {/* Filters */}
         <aside className="h-fit rounded-3xl border border-border bg-card p-6 shadow-soft lg:sticky lg:top-28">
           <h2 className="flex items-center gap-2 font-display text-xl">
-            <SlidersHorizontal className="size-4 text-gold" aria-hidden="true" /> Filters
+            <SlidersHorizontal className="size-4 text-gold" aria-hidden="true" /> {t("market.filters")}
           </h2>
 
           <div className="mt-6 space-y-6">
             <div>
-              <Label htmlFor="filter-category">Category</Label>
+              <Label htmlFor="filter-category">{t("market.category")}</Label>
               <Select
                 value={category}
                 onValueChange={(value) => {
@@ -144,13 +146,13 @@ function Marketplace() {
                 }}
               >
                 <SelectTrigger id="filter-category" className="mt-2">
-                  <SelectValue placeholder="All categories" />
+                  <SelectValue placeholder={t("market.allCategories")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All categories</SelectItem>
+                  <SelectItem value="all">{t("market.allCategories")}</SelectItem>
                   {CATEGORIES.map((item) => (
                     <SelectItem key={item} value={item}>
-                      {item}
+                      {categoryName(item)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -158,7 +160,7 @@ function Marketplace() {
             </div>
 
             <div>
-              <Label htmlFor="filter-material">Material</Label>
+              <Label htmlFor="filter-material">{t("market.material")}</Label>
               <Select
                 value={material}
                 onValueChange={(value) => {
@@ -167,10 +169,10 @@ function Marketplace() {
                 }}
               >
                 <SelectTrigger id="filter-material" className="mt-2">
-                  <SelectValue placeholder="All materials" />
+                  <SelectValue placeholder={t("market.allMaterials")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All materials</SelectItem>
+                  <SelectItem value="all">{t("market.allMaterials")}</SelectItem>
                   {materials.map((item) => (
                     <SelectItem key={item} value={item}>
                       {item}
@@ -182,7 +184,7 @@ function Marketplace() {
 
             <div>
               <Label htmlFor="filter-price">
-                Max price:{" "}
+                {t("market.maxPrice")}:{" "}
                 <span className="text-gold">
                   €{(maxPrice ?? priceCeiling).toLocaleString("en-GB")}
                 </span>
@@ -213,13 +215,13 @@ function Marketplace() {
                 resetPage();
               }}
             >
-              Reset filters
+              {t("market.reset")}
             </Button>
           </div>
         </aside>
 
         {/* Results */}
-        <section aria-label="Search results">
+        <section aria-label={t("market.search")}>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
             <div className="relative flex-1">
               <Search
@@ -227,7 +229,7 @@ function Marketplace() {
                 aria-hidden="true"
               />
               <label htmlFor="search" className="sr-only">
-                Search antiques
+                {t("market.search")}
               </label>
               <Input
                 id="search"
@@ -236,7 +238,7 @@ function Marketplace() {
                   setQuery(event.target.value);
                   resetPage();
                 }}
-                placeholder="Search by title, material or description…"
+                placeholder={t("market.searchPlaceholder")}
                 className="h-12 rounded-full pl-11"
               />
             </div>
@@ -248,13 +250,13 @@ function Marketplace() {
                 resetPage();
               }}
             >
-              <SelectTrigger className="h-12 rounded-full sm:w-56" aria-label="Sort by">
+              <SelectTrigger className="h-12 rounded-full sm:w-56" aria-label={t("market.sort")}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {Object.entries(SORTS).map(([value, label]) => (
                   <SelectItem key={value} value={value}>
-                    {label}
+                    {sortLabels[value as keyof typeof sortLabels]}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -262,7 +264,7 @@ function Marketplace() {
           </div>
 
           <p className="mt-5 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-            {filtered.length} {filtered.length === 1 ? "piece" : "pieces"} found
+            {filtered.length} {filtered.length === 1 ? t("market.piece") : t("market.pieces")} {t("market.found")}
           </p>
 
           <div className="mt-6 grid gap-8 sm:grid-cols-2 xl:grid-cols-3">
@@ -280,22 +282,22 @@ function Marketplace() {
 
           {!isLoading && filtered.length === 0 && (
             <div className="mt-10 rounded-3xl border border-dashed border-gold/40 p-16 text-center">
-              <p className="font-display text-2xl">Nothing matches that search</p>
+              <p className="font-display text-2xl">{t("market.empty")}</p>
               <p className="mt-2 text-sm text-muted-foreground">
-                Try widening the price range or clearing the filters.
+                {t("market.emptyHint")}
               </p>
             </div>
           )}
 
           {pageCount > 1 && (
-            <nav className="mt-14 flex items-center justify-center gap-2" aria-label="Pagination">
+            <nav className="mt-14 flex items-center justify-center gap-2" aria-label={t("market.search")}>
               <Button
                 variant="goldOutline"
                 size="sm"
                 disabled={currentPage === 1}
                 onClick={() => setPage((value) => Math.max(1, value - 1))}
               >
-                Previous
+                {t("market.previous")}
               </Button>
               {Array.from({ length: pageCount }).map((_, index) => (
                 <Button
@@ -314,7 +316,7 @@ function Marketplace() {
                 disabled={currentPage === pageCount}
                 onClick={() => setPage((value) => Math.min(pageCount, value + 1))}
               >
-                Next
+                {t("market.next")}
               </Button>
             </nav>
           )}

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Check, ChevronDown, Languages, Menu, MessageCircle, Search, ShoppingBag, User2, X, LayoutDashboard, LogOut } from "lucide-react";
+import { Check, ChevronDown, Languages, Menu, MessageCircle, Search, ShoppingBag, X, LayoutDashboard } from "lucide-react";
 import logo from "@/assets/jadisart-logo.png";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/cart";
@@ -11,7 +11,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 const NAV = [
   { to: "/", label: "nav.home" },
   { to: "/marketplace", label: "nav.marketplace" },
-  { to: "/categories", label: "nav.categories" },
   { to: "/about", label: "nav.about" },
   { to: "/contact", label: "nav.contact" },
 ] as const;
@@ -25,7 +24,7 @@ const LANGUAGES: Array<{ value: Language; flag: string; label: string; short: st
 export function Header() {
   const [open, setOpen] = useState(false);
   const { count } = useCart();
-  const { user, isAdmin, signOut } = useAuth();
+  const { isAdmin } = useAuth();
   const { language, setLanguage, t } = useLanguage();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const activeLanguage = LANGUAGES.find((item) => item.value === language) ?? LANGUAGES[2];
@@ -95,31 +94,8 @@ export function Header() {
           </Button>
           {isAdmin && (
             <Button variant="goldOutline" size="sm" className="hidden text-gold sm:inline-flex" asChild>
-              <Link to="/dashboard">
+              <Link to="/admin">
                 <LayoutDashboard aria-hidden="true" /> {t("nav.dashboard")}
-              </Link>
-            </Button>
-          )}
-
-          {user ? (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={signOut}
-              aria-label={t("auth.signOut")}
-              className="text-espresso-foreground hover:bg-gold/15 hover:text-gold"
-            >
-              <LogOut aria-hidden="true" />
-            </Button>
-          ) : (
-            <Button
-              variant="ghost"
-              size="icon"
-              asChild
-              className="text-espresso-foreground hover:bg-gold/15 hover:text-gold"
-            >
-              <Link to="/auth" aria-label={t("a11y.account")}>
-                <User2 aria-hidden="true" />
               </Link>
             </Button>
           )}

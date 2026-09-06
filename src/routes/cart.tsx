@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/cart";
+import { useLanguage } from "@/context/language";
 import { formatPrice, PLACEHOLDER_IMAGE } from "@/lib/catalog";
 
 export const Route = createFileRoute("/cart")({
@@ -22,22 +23,23 @@ export const Route = createFileRoute("/cart")({
 
 function CartPage() {
   const { lines, total, count, removeItem, setQuantity } = useCart();
+  const { t } = useLanguage();
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-      <h1 className="font-display text-4xl sm:text-5xl">Shopping cart</h1>
+      <h1 className="font-display text-4xl sm:text-5xl">{t("cart.title")}</h1>
       <p className="mt-3 text-sm text-muted-foreground">
-        {count === 0 ? "Your cart is currently empty." : `${count} item${count > 1 ? "s" : ""} reserved for you.`}
+        {count === 0 ? t("cart.empty") : `${count} ${count > 1 ? t("cart.reservedPlural") : t("cart.reserved")}`}
       </p>
 
       {lines.length === 0 ? (
         <div className="mt-12 rounded-3xl border border-border bg-card p-12 text-center shadow-soft">
           <ShoppingBag className="mx-auto size-8 text-gold" aria-hidden="true" />
           <p className="mt-4 text-sm text-muted-foreground">
-            Nothing here yet — browse the collection to find your next piece.
+            {t("cart.nothing")}
           </p>
           <Button variant="gold" className="mt-6" asChild>
-            <Link to="/marketplace">Continue shopping</Link>
+            <Link to="/marketplace">{t("cart.continue")}</Link>
           </Button>
         </div>
       ) : (
@@ -71,7 +73,7 @@ function CartPage() {
                   <Button
                     variant="outline"
                     size="icon"
-                    aria-label="Decrease quantity"
+                    aria-label={t("cart.decrease")}
                     onClick={() => setQuantity(line.id, line.quantity - 1)}
                   >
                     <Minus aria-hidden="true" />
@@ -82,7 +84,7 @@ function CartPage() {
                   <Button
                     variant="outline"
                     size="icon"
-                    aria-label="Increase quantity"
+                    aria-label={t("cart.increase")}
                     disabled={line.quantity >= line.stock}
                     onClick={() => setQuantity(line.id, line.quantity + 1)}
                   >
@@ -97,7 +99,7 @@ function CartPage() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    aria-label={`Remove ${line.title}`}
+                    aria-label={`${t("cart.remove")} ${line.title}`}
                     onClick={() => removeItem(line.id)}
                     className="text-muted-foreground hover:text-destructive"
                   >
@@ -109,26 +111,26 @@ function CartPage() {
           </ul>
 
           <aside className="h-fit rounded-3xl border border-gold/25 bg-card p-6 shadow-soft">
-            <h2 className="font-display text-2xl">Order summary</h2>
+            <h2 className="font-display text-2xl">{t("cart.summary")}</h2>
             <dl className="mt-6 space-y-3 text-sm">
               <div className="flex justify-between">
-                <dt className="text-muted-foreground">Subtotal</dt>
+                <dt className="text-muted-foreground">{t("cart.subtotal")}</dt>
                 <dd>{formatPrice(total)}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-muted-foreground">Shipping</dt>
-                <dd>Quoted after checkout</dd>
+                <dt className="text-muted-foreground">{t("cart.shipping")}</dt>
+                <dd>{t("cart.shippingQuote")}</dd>
               </div>
               <div className="flex justify-between border-t border-border pt-3 font-display text-xl">
-                <dt>Total</dt>
+                <dt>{t("account.total")}</dt>
                 <dd className="text-gold">{formatPrice(total)}</dd>
               </div>
             </dl>
             <Button variant="gold" size="lg" className="mt-6 w-full" asChild>
-              <Link to="/checkout">Proceed to checkout</Link>
+              <Link to="/checkout">{t("cart.proceed")}</Link>
             </Button>
             <Button variant="ghost" className="mt-2 w-full" asChild>
-              <Link to="/marketplace">Continue shopping</Link>
+              <Link to="/marketplace">{t("cart.continue")}</Link>
             </Button>
           </aside>
         </div>

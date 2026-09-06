@@ -18,6 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useProducts } from "@/lib/products";
 import { CATEGORIES, CONDITIONS, formatPrice, productImage } from "@/lib/catalog";
 import { useQueryClient } from "@tanstack/react-query";
+import { useLanguage } from "@/context/language";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -49,6 +50,7 @@ function Dashboard() {
   const [condition, setCondition] = useState<string>(CONDITIONS[1]);
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const { t, categoryName } = useLanguage();
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/auth", replace: true });
@@ -65,13 +67,12 @@ function Dashboard() {
   if (!isAdmin) {
     return (
       <section className="mx-auto max-w-2xl px-4 py-24 text-center sm:px-6">
-        <h1 className="font-display text-4xl">Seller dashboard</h1>
+        <h1 className="font-display text-4xl">{t("dashboard.deniedTitle")}</h1>
         <p className="mt-4 text-sm text-muted-foreground">
-          This area is reserved for JadisArt sellers. Contact us if you would like to list pieces
-          with us.
+          {t("dashboard.denied")}
         </p>
         <Button variant="gold" className="mt-6" asChild>
-          <Link to="/contact">Contact JadisArt</Link>
+          <Link to="/contact">{t("dashboard.contact")}</Link>
         </Button>
       </section>
     );
@@ -117,18 +118,18 @@ function Dashboard() {
     setSaving(false);
 
     if (error) {
-      toast.error("The listing could not be published.");
+      toast.error(t("dashboard.publishError"));
       return;
     }
     form.reset();
     await queryClient.invalidateQueries({ queryKey: ["products"] });
-    toast.success("Listing published to the marketplace.");
+    toast.success(t("dashboard.published"));
   };
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-      <p className="text-xs uppercase tracking-[0.34em] text-gold">Seller area</p>
-      <h1 className="mt-3 font-display text-4xl sm:text-5xl">Publish an antique</h1>
+      <p className="text-xs uppercase tracking-[0.34em] text-gold">{t("dashboard.seller")}</p>
+      <h1 className="mt-3 font-display text-4xl sm:text-5xl">{t("dashboard.title")}</h1>
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[1.3fr_1fr]">
         <form
@@ -138,28 +139,28 @@ function Dashboard() {
         >
           <div className="grid gap-5">
             <div>
-              <Label htmlFor="title">Product title *</Label>
+              <Label htmlFor="title">{t("dashboard.productTitle")}</Label>
               <Input id="title" name="title" className="mt-2" />
               {errors.title && <p className="mt-1 text-xs text-destructive">{errors.title}</p>}
             </div>
             <div>
-              <Label htmlFor="description">Description *</Label>
+              <Label htmlFor="description">{t("dashboard.description")}</Label>
               <Textarea id="description" name="description" rows={5} className="mt-2" />
               {errors.description && (
                 <p className="mt-1 text-xs text-destructive">{errors.description}</p>
               )}
             </div>
             <div>
-              <Label htmlFor="images">Image URLs (one per line)</Label>
+              <Label htmlFor="images">{t("dashboard.images")}</Label>
               <Textarea id="images" name="images" rows={3} className="mt-2" />
             </div>
             <div className="grid gap-5 sm:grid-cols-2">
               <div>
-                <Label htmlFor="price">Price (EUR)</Label>
+                <Label htmlFor="price">{t("dashboard.price")}</Label>
                 <Input id="price" name="price" type="number" min="0" step="1" className="mt-2" />
               </div>
               <div>
-                <Label htmlFor="stock_quantity">Stock quantity</Label>
+                <Label htmlFor="stock_quantity">{t("dashboard.stock")}</Label>
                 <Input
                   id="stock_quantity"
                   name="stock_quantity"
@@ -170,7 +171,7 @@ function Dashboard() {
                 />
               </div>
               <div>
-                <Label>Category</Label>
+                <Label>{t("market.category")}</Label>
                 <Select value={category} onValueChange={setCategory}>
                   <SelectTrigger className="mt-2">
                     <SelectValue />
@@ -178,14 +179,14 @@ function Dashboard() {
                   <SelectContent>
                     {CATEGORIES.map((item) => (
                       <SelectItem key={item} value={item}>
-                        {item}
+                        {categoryName(item)}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label>Condition</Label>
+                <Label>{t("dashboard.condition")}</Label>
                 <Select value={condition} onValueChange={setCondition}>
                   <SelectTrigger className="mt-2">
                     <SelectValue />
@@ -200,15 +201,15 @@ function Dashboard() {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="material">Material</Label>
+                <Label htmlFor="material">{t("product.material")}</Label>
                 <Input id="material" name="material" className="mt-2" />
               </div>
               <div>
-                <Label htmlFor="dimensions">Dimensions</Label>
+                <Label htmlFor="dimensions">{t("product.size")}</Label>
                 <Input id="dimensions" name="dimensions" className="mt-2" />
               </div>
               <div>
-                <Label htmlFor="weight">Weight</Label>
+                <Label htmlFor="weight">{t("product.weight")}</Label>
                 <Input id="weight" name="weight" className="mt-2" />
               </div>
               <div>
@@ -216,22 +217,22 @@ function Dashboard() {
                 <Input id="year" name="year" className="mt-2" />
               </div>
               <div>
-                <Label htmlFor="seller_name">Seller name</Label>
+                <Label htmlFor="seller_name">{t("dashboard.sellerName")}</Label>
                 <Input id="seller_name" name="seller_name" defaultValue="JadisArt" className="mt-2" />
               </div>
               <div>
-                <Label htmlFor="seller_location">Seller location</Label>
+                <Label htmlFor="seller_location">{t("dashboard.location")}</Label>
                 <Input id="seller_location" name="seller_location" className="mt-2" />
               </div>
             </div>
           </div>
           <Button type="submit" variant="gold" size="lg" className="mt-8 w-full" disabled={saving}>
-            {saving ? "Publishing…" : "Publish to marketplace"}
+            {saving ? t("dashboard.publishing") : t("dashboard.publish")}
           </Button>
         </form>
 
         <aside className="h-fit rounded-3xl border border-gold/25 bg-card p-6 shadow-soft">
-          <h2 className="font-display text-2xl">Live listings</h2>
+          <h2 className="font-display text-2xl">{t("dashboard.live")}</h2>
           <ul className="mt-5 space-y-4">
             {products.slice(0, 8).map((product) => (
               <li key={product.id} className="flex items-center gap-3">

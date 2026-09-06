@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useCart } from "@/context/cart";
 import { formatPrice } from "@/lib/catalog";
 import { useAuth } from "@/hooks/useAuth";
+import { useLanguage } from "@/context/language";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/checkout")({
@@ -42,11 +43,12 @@ function Checkout() {
   const navigate = useNavigate();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [placing, setPlacing] = useState(false);
+  const { t } = useLanguage();
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!user) {
-      toast.error("Please sign in to confirm your order.");
+      toast.error(t("checkout.signInRequired"));
       return;
     }
     const form = event.currentTarget;
@@ -56,7 +58,7 @@ function Checkout() {
       const next: Record<string, string> = {};
       for (const issue of parsed.error.issues) next[String(issue.path[0])] = issue.message;
       setErrors(next);
-      toast.error("Please correct the highlighted fields.");
+      toast.error(t("checkout.correctFields"));
       return;
     }
     setErrors({});
@@ -80,7 +82,7 @@ function Checkout() {
 
     if (error || !order) {
       setPlacing(false);
-      toast.error("We could not place your order. Please try again.");
+      toast.error(t("checkout.orderError"));
       return;
     }
 
@@ -96,22 +98,22 @@ function Checkout() {
     setPlacing(false);
 
     if (itemsError) {
-      toast.error("Your order was created but the items could not be saved. Please contact us.");
+      toast.error(t("checkout.itemsError"));
       return;
     }
 
     clear();
-    toast.success("Order confirmed — our team will contact you about delivery.");
+    toast.success(t("checkout.confirmed"));
     navigate({ to: "/account", search: { tab: "orders" } });
   };
 
   if (lines.length === 0) {
     return (
       <section className="mx-auto max-w-3xl px-4 py-24 text-center sm:px-6 lg:px-8">
-        <h1 className="font-display text-4xl">Checkout</h1>
-        <p className="mt-4 text-sm text-muted-foreground">Your cart is empty.</p>
+        <h1 className="font-display text-4xl">{t("checkout.title")}</h1>
+        <p className="mt-4 text-sm text-muted-foreground">{t("checkout.empty")}</p>
         <Button variant="gold" className="mt-6" asChild>
-          <Link to="/marketplace">Browse the collection</Link>
+          <Link to="/marketplace">{t("account.browse")}</Link>
         </Button>
       </section>
     );
@@ -119,14 +121,14 @@ function Checkout() {
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-      <h1 className="font-display text-4xl sm:text-5xl">Checkout</h1>
+      <h1 className="font-display text-4xl sm:text-5xl">{t("checkout.title")}</h1>
 
       {!user && (
         <div className="mt-6 rounded-2xl border border-gold/30 bg-beige/60 p-4 text-sm">
           <Link to="/auth" className="text-gold underline-offset-4 hover:underline">
-            Sign in or create an account
+            {t("checkout.signIn")}
           </Link>{" "}
-          to confirm your order and follow its progress.
+          {t("checkout.signInHint")}
         </div>
       )}
 
@@ -136,17 +138,17 @@ function Checkout() {
           noValidate
           className="rounded-3xl border border-border bg-card p-6 shadow-soft sm:p-8"
         >
-          <h2 className="font-display text-2xl">Delivery details</h2>
+          <h2 className="font-display text-2xl">{t("checkout.delivery")}</h2>
           <div className="mt-6 grid gap-5 sm:grid-cols-2">
             {(
               [
-                ["full_name", "Full name", "text"],
-                ["email", "Email", "email"],
-                ["phone", "Phone", "tel"],
-                ["address", "Address", "text"],
-                ["city", "City", "text"],
-                ["postal_code", "Postal code", "text"],
-                ["country", "Country", "text"],
+                ["full_name", t("checkout.fullName"), "text"],
+                ["email", t("newsletter.email"), "email"],
+                ["phone", t("account.phone"), "tel"],
+                ["address", t("checkout.address"), "text"],
+                ["city", t("checkout.city"), "text"],
+                ["postal_code", t("checkout.postal"), "text"],
+                ["country", t("checkout.country"), "text"],
               ] as const
             ).map(([name, label, type]) => (
               <div key={name} className={name === "address" ? "sm:col-span-2" : undefined}>
@@ -169,29 +171,28 @@ function Checkout() {
             className="mt-8 w-full"
             disabled={placing || !user}
           >
-            {placing ? "Confirming…" : "Confirm order"}
+            {placing ? t("checkout.confirming") : t("checkout.confirm")}
           </Button>
           <p className="mt-3 text-xs text-muted-foreground">
-            No payment is taken online. Our team contacts you with a secure payment link and a
-            shipping quote.
+            {t("checkout.payment")}
           </p>
         </form>
 
         <aside className="h-fit rounded-3xl border border-gold/25 bg-card p-6 shadow-soft">
-          <h2 className="font-display text-2xl">Order summary</h2>
+          <h2 className="font-display text-2xl">{t("cart.summary")}</h2>
           <ul className="mt-5 space-y-4 text-sm">
             {lines.map((line) => (
               <li key={line.id} className="flex justify-between gap-4">
                 <span className="min-w-0">
                   <span className="block truncate">{line.title}</span>
-                  <span className="text-xs text-muted-foreground">Quantity {line.quantity}</span>
+                  <span className="text-xs text-muted-foreground">{t("checkout.quantity")} {line.quantity}</span>
                 </span>
                 <span>{formatPrice((line.price ?? 0) * line.quantity)}</span>
               </li>
             ))}
           </ul>
           <div className="mt-6 flex justify-between border-t border-border pt-4 font-display text-xl">
-            <span>Total</span>
+            <span>{t("account.total")}</span>
             <span className="text-gold">{formatPrice(total)}</span>
           </div>
         </aside>

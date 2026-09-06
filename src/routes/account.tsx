@@ -11,6 +11,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { ChatPanel } from "@/components/ChatPanel";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/context/cart";
+import { useLanguage } from "@/context/language";
 import { formatPrice, PLACEHOLDER_IMAGE } from "@/lib/catalog";
 import { useOrders, useProfile, useUpdateProfile, useWishlist } from "@/lib/account";
 
@@ -47,6 +48,7 @@ function Account() {
   const { data: wishlist = [] } = useWishlist(user?.id);
   const { lines, total, removeItem } = useCart();
   const updateProfile = useUpdateProfile(user?.id);
+  const { t } = useLanguage();
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -72,9 +74,9 @@ function Account() {
         phone: values.phone?.trim() || null,
         full_name: `${values.first_name ?? ""} ${values.last_name ?? ""}`.trim() || null,
       });
-      toast.success("Profile updated.");
+      toast.success(t("account.updated"));
     } catch {
-      toast.error("Your profile could not be saved.");
+      toast.error(t("account.saveError"));
     } finally {
       setSaving(false);
     }
@@ -88,30 +90,30 @@ function Account() {
     <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-[0.34em] text-gold">My account</p>
+          <p className="text-xs uppercase tracking-[0.34em] text-gold">{t("account.label")}</p>
           <h1 className="mt-3 font-display text-4xl sm:text-5xl">{displayName}</h1>
         </div>
-        <Button variant="ghost" onClick={signOut}>
-          <LogOut aria-hidden="true" /> Log out
+          <Button variant="ghost" onClick={signOut}>
+          <LogOut aria-hidden="true" /> {t("account.logout")}
         </Button>
       </div>
 
       <Tabs defaultValue={search.tab ?? "profile"} className="mt-10">
         <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1">
           <TabsTrigger value="profile">
-            <User2 className="mr-2 size-4" aria-hidden="true" /> Profile
+            <User2 className="mr-2 size-4" aria-hidden="true" /> {t("account.profile")}
           </TabsTrigger>
           <TabsTrigger value="orders">
-            <Package className="mr-2 size-4" aria-hidden="true" /> Orders
+            <Package className="mr-2 size-4" aria-hidden="true" /> {t("account.orders")}
           </TabsTrigger>
           <TabsTrigger value="cart">
-            <ShoppingBag className="mr-2 size-4" aria-hidden="true" /> Cart
+            <ShoppingBag className="mr-2 size-4" aria-hidden="true" /> {t("account.cart")}
           </TabsTrigger>
           <TabsTrigger value="wishlist">
-            <Heart className="mr-2 size-4" aria-hidden="true" /> Wishlist
+            <Heart className="mr-2 size-4" aria-hidden="true" /> {t("account.wishlist")}
           </TabsTrigger>
           <TabsTrigger value="messages">
-            <MessageCircle className="mr-2 size-4" aria-hidden="true" /> Messages
+            <MessageCircle className="mr-2 size-4" aria-hidden="true" /> {t("account.messages")}
           </TabsTrigger>
         </TabsList>
 
@@ -120,10 +122,10 @@ function Account() {
             onSubmit={saveProfile}
             className="max-w-xl rounded-3xl border border-border bg-card p-6 shadow-soft"
           >
-            <h2 className="font-display text-2xl">Profile information</h2>
+            <h2 className="font-display text-2xl">{t("account.profileInfo")}</h2>
             <div className="mt-6 grid gap-5 sm:grid-cols-2">
               <div>
-                <Label htmlFor="first_name">First name</Label>
+                <Label htmlFor="first_name">{t("account.firstName")}</Label>
                 <Input
                   id="first_name"
                   name="first_name"
@@ -132,7 +134,7 @@ function Account() {
                 />
               </div>
               <div>
-                <Label htmlFor="last_name">Last name</Label>
+                <Label htmlFor="last_name">{t("account.lastName")}</Label>
                 <Input
                   id="last_name"
                   name="last_name"
@@ -145,7 +147,7 @@ function Account() {
                 <Input id="acc-email" className="mt-2" value={user.email ?? ""} readOnly disabled />
               </div>
               <div>
-                <Label htmlFor="phone">Phone number</Label>
+                <Label htmlFor="phone">{t("account.phone")}</Label>
                 <Input
                   id="phone"
                   name="phone"
@@ -156,7 +158,7 @@ function Account() {
               </div>
             </div>
             <Button type="submit" variant="gold" className="mt-6" disabled={saving}>
-              {saving ? "Saving…" : "Save changes"}
+              {saving ? t("account.saving") : t("account.save")}
             </Button>
           </form>
         </TabsContent>
@@ -164,8 +166,8 @@ function Account() {
         <TabsContent value="orders">
           {orders.length === 0 ? (
             <EmptyState
-              text="You have not placed an order yet."
-              actionLabel="Browse the collection"
+              text={t("account.noOrder")}
+              actionLabel={t("account.browse")}
               to="/marketplace"
             />
           ) : (
@@ -205,8 +207,8 @@ function Account() {
         <TabsContent value="cart">
           {lines.length === 0 ? (
             <EmptyState
-              text="Your cart is empty."
-              actionLabel="Browse the collection"
+              text={t("account.emptyCart")}
+              actionLabel={t("account.browse")}
               to="/marketplace"
             />
           ) : (
@@ -229,15 +231,15 @@ function Account() {
                       </span>
                     </span>
                     <Button variant="ghost" size="sm" onClick={() => removeItem(line.id)}>
-                      Remove
+                      {t("account.remove")}
                     </Button>
                   </li>
                 ))}
               </ul>
               <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-4">
-                <span className="font-display text-xl">Total {formatPrice(total)}</span>
+                <span className="font-display text-xl">{t("account.total")} {formatPrice(total)}</span>
                 <Button variant="gold" asChild>
-                  <Link to="/checkout">Checkout</Link>
+                  <Link to="/checkout">{t("account.checkout")}</Link>
                 </Button>
               </div>
             </div>
@@ -247,8 +249,8 @@ function Account() {
         <TabsContent value="wishlist">
           {wishlist.length === 0 ? (
             <EmptyState
-              text="Your wishlist is empty. Use the heart on a piece to save it."
-              actionLabel="Browse the collection"
+              text={t("account.emptyWishlist")}
+              actionLabel={t("account.browse")}
               to="/marketplace"
             />
           ) : (

@@ -218,6 +218,25 @@ Stock Quantity
 
 When submitted, the product automatically appears in the Marketplace.
 
+## Contact email delivery
+
+The contact form sends a professionally formatted email to `jadisart.gallery@gmail.com` through the server-only `POST /api/contact` endpoint. It uses Resend; no private key is included in browser code.
+
+Before deploying, copy `.env.example` to `.env` and configure:
+
+- `RESEND_API_KEY`: a server-side Resend API key.
+- `RESEND_FROM_EMAIL`: a sender address verified in Resend, for example `JadisArt Contact <contact@your-verified-domain.com>`.
+
+The form also stores the inquiry in Supabase after email delivery succeeds. If Resend is not configured or rejects the request, the form shows an error and does not claim success.
+
+## Private antiquity listings
+
+The private listing manager is available at `/admin` and `/admin/add-antiquity`. It requires a signed-in Supabase user with the `admin` role. The Client Services chat accepts the server-validated access code from `ADMIN_ACCESS_CODE` and redirects to the protected add page without writing the code to chat history.
+
+Apply `supabase/migrations/20260906120000_add_antiquity_listing_fields.sql` to add the structured listing fields, draft/published status, slug index, and the `antiquity-images` Storage bucket with admin-only upload/update/delete policies. Public users can read only published listings and public antiquity images.
+
+The access-code redirect is only an entry shortcut; Supabase authentication and the database RLS policies remain the actual authorization boundary. Set `ADMIN_ACCESS_CODE` in the server environment and never expose it as a `VITE_` variable.
+
 Contact Seller
 
 Each product page must include a button:
