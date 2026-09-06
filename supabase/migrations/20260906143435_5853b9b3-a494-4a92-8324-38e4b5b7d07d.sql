@@ -1,0 +1,4 @@
+CREATE POLICY "antiquity images readable" ON storage.objects FOR SELECT TO anon, authenticated USING (bucket_id = 'antiquity-images');
+CREATE POLICY "admins upload antiquity images" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'antiquity-images' AND public.has_role(auth.uid(), 'admin'));
+CREATE POLICY "admins update antiquity images" ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = 'antiquity-images' AND public.has_role(auth.uid(), 'admin')) WITH CHECK (bucket_id = 'antiquity-images' AND public.has_role(auth.uid(), 'admin'));
+CREATE POLICY "admins delete antiquity images" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'antiquity-images' AND public.has_role(auth.uid(), 'admin'));

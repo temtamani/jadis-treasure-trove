@@ -22,6 +22,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as MarketplaceRouteImport } from './routes/marketplace'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as AdminAddAntiquityRouteImport } from './routes/admin.add-antiquity'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -89,6 +90,11 @@ const AdminAddAntiquityRoute = AdminAddAntiquityRouteImport.update({
   path: '/add-antiquity',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AdminRoute,
+} as any)
 const ProductIdRoute = ProductIdRouteImport.update({
   id: '/product/$id',
   path: '/product/$id',
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/marketplace': typeof MarketplaceRoute
   '/support': typeof SupportRoute
   '/admin/add-antiquity': typeof AdminAddAntiquityRoute
+  '/admin/login': typeof AdminLoginRoute
   '/product/$id': typeof ProductIdRoute
 }
 export interface FileRoutesByTo {
@@ -125,6 +132,7 @@ export interface FileRoutesByTo {
   '/marketplace': typeof MarketplaceRoute
   '/support': typeof SupportRoute
   '/admin/add-antiquity': typeof AdminAddAntiquityRoute
+  '/admin/login': typeof AdminLoginRoute
   '/product/$id': typeof ProductIdRoute
 }
 export interface FileRoutesById {
@@ -142,6 +150,7 @@ export interface FileRoutesById {
   '/marketplace': typeof MarketplaceRoute
   '/support': typeof SupportRoute
   '/admin/add-antiquity': typeof AdminAddAntiquityRoute
+  '/admin/login': typeof AdminLoginRoute
   '/product/$id': typeof ProductIdRoute
 }
 export interface FileRouteTypes {
@@ -160,6 +169,7 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/support'
     | '/admin/add-antiquity'
+    | '/admin/login'
     | '/product/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -176,6 +186,7 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/support'
     | '/admin/add-antiquity'
+    | '/admin/login'
     | '/product/$id'
   id:
     | '__root__'
@@ -192,6 +203,7 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/support'
     | '/admin/add-antiquity'
+    | '/admin/login'
     | '/product/$id'
   fileRoutesById: FileRoutesById
 }
@@ -304,6 +316,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAddAntiquityRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/product/$id': {
       id: '/product/$id'
       path: '/product/$id'
@@ -316,10 +335,12 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminAddAntiquityRoute: typeof AdminAddAntiquityRoute
+  AdminLoginRoute: typeof AdminLoginRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAddAntiquityRoute: AdminAddAntiquityRoute,
+  AdminLoginRoute: AdminLoginRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
